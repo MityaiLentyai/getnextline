@@ -6,7 +6,7 @@
 /*   By: dzzayats <dzzayats@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/16 18:03:30 by dzzayats          #+#    #+#             */
-/*   Updated: 2026/07/24 19:20:20 by dzzayats         ###   ########.fr       */
+/*   Updated: 2026/07/24 20:49:01 by dzzayats         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,11 +20,12 @@
 
 typedef struct s_list
 {
+	
 	char *content;
 	struct s_list *next;
 }	t_list;
 
-char *get_next_line(int fd);
-t_list *create_node(char *str);
+char 	*get_next_line(int fd);
+t_list	*create_node(char *str);
 
 #endif
