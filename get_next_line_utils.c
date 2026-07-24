@@ -6,7 +6,9 @@
 /*   By: dzzayats <dzzayats@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/16 18:03:36 by dzzayats          #+#    #+#             */
-/*   Updated: 2026/07/16 18:03:37 by dzzayats         ###   ########.fr       */
+/*   Updated: 2026/07/24 19:19:22 by dzzayats         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+#include "get_next_line.h"
 
