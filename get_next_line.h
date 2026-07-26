@@ -6,14 +6,22 @@
 /*   By: dzzayats <dzzayats@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/16 18:03:30 by dzzayats          #+#    #+#             */
-/*   Updated: 2026/07/24 20:49:01 by dzzayats         ###   ########.fr       */
+/*   Updated: 2026/07/26 19:07:41 by dzzayats         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef GET_NEXT_LINE_H
 # define GET_NEXT_LINE_H
 
-#define BUF
+#ifndef BUFFER_SIZE
+# define BUFFER_SIZE 5
+#endif
+
+# if BUFFER_SIZE > 9223372036854775806
+#  undef BUFFER_SIZE
+#  define BUFFER_SIZE 0
+# endif
+
 #include <fcntl.h>
 #include <stdlib.h>
 #include <unistd.h>
