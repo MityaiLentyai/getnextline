@@ -6,66 +6,104 @@
 /*   By: dzzayats <dzzayats@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/16 18:03:33 by dzzayats          #+#    #+#             */
-/*   Updated: 2026/07/27 18:48:53 by dzzayats         ###   ########.fr       */
+/*   Updated: 2026/07/28 00:40:00 by dzzayats         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
-#include <stdio.h>
 
-size_t	*line_len(char *stash)
+t_list	*read_until_nl(t_list *stash, int fd)
 {
-	size_t	len_line;
-	
-	len_line = 0;
-	if (!stash)
-		return (len_line);
-	while (stash[len_line] && stash[len_line] != '\n')
-		len_line++;
-	if (stash[len_line] == '\n')
-		len_line++;
-	return (len_line);
+	t_list	*new;
+	t_list	*tmp;
+
+	if (stash && lst_has_newline(stash))
+		return (stash);
+	while (1)
+	{
+		new = create_node(fd);
+		if (!new)
+			return (stash);
+		if (!stash)
+			stash = new;
+		else
+		{
+			tmp = stash;
+			while (tmp->next)
+				tmp = tmp->next;
+			tmp->next = new;
+		}
+		if (lst_has_newline(stash))
+			return (stash);
+	}
 }
 
-char 	*get_first_line(char *stash,size_t line_len)
+char	*copy_line_from_lst(t_list *lst, size_t len)
 {
-	char const *line  = malloc(line_len*sizeof(char));
-	
-	
+	char	*line;
+	size_t	j;
+	ssize_t	pos;
+
+	line = malloc((len + 1) * sizeof(char));
+	if (!line)
+		return (NULL);
+	j = 0;
+	while (j < len && lst)
+	{
+		pos = lst->current_byte;
+		while (j < len && pos < lst->bytes_read)
+			line[j++] = lst->current_line[pos++];
+		lst = lst->next;
+	}
+	line[j] = '\0';
 	return (line);
 }
-char *get_next_line(int fd)
+
+void	advance_stash(t_list **stash, size_t len)
 {
-	static char		*stash;
-	char 			*line;
-	size_t			line_size;
-	
-	if (fd < 0 || BUFFER_SIZE <= 0)
-		stash = NULL;
-	else
-		stash = prepare_line(stash, fd);
-	if (!stash || !*stash)
+	t_list	*node;
+	size_t	j;
+
+	j = 0;
+	while (*stash && j < len)
 	{
-		free(stash);
-		stash = NULL;
+		while (*stash && j < len
+			&& (*stash)->current_byte < (*stash)->bytes_read)
+		{
+			(*stash)->current_byte++;
+			j++;
+		}
+		if (*stash && (*stash)->current_byte >= (*stash)->bytes_read)
+		{
+			node = *stash;
+			*stash = (*stash)->next;
+			free(node->current_line);
+			free(node);
+		}
+	}
+}
+
+char	*get_next_line(int fd)
+{
+	static t_list	*stash;
+	char			*line;
+	size_t			len;
+
+	if (fd < 0 || BUFFER_SIZE <= 0)
+	{
+		lst_clear(&stash);
 		return (NULL);
 	}
-	line_size = line_len(stash);
-	line = get_first_line(stash, line_size);
-	stash = remove_first_line(stash, line_size);
+	stash = read_until_nl(stash, fd);
+	len = lst_line_len(stash);
+	if (len == 0)
+	{
+		lst_clear(&stash);
+		return (NULL);
+	}
+	line = copy_line_from_lst(stash, len);
+	if (!line)
+		return (NULL);
+	advance_stash(&stash, len);
 	return (line);
 }
-
-// int main()
-// {
-// 	char *file = "test_1.txt";
-// 	int fd = open(file,O_RDONLY);
-// 	char *str = get_next_line(fd);
-// 	// free(str);
-// 	int i = 4;
-// 	while (i-->0)
-// 	{
-// 		char *str = get_next_line(fd);
-// 		printf ("%s",str);
-// 	}
-// }
