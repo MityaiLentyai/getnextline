@@ -98,6 +98,31 @@ Line 2: Second line
 Line 3: Fourth; line??? 
 Line 4: No _ LIES - THIS IS THE FOURTH LINE
 ```
+### main.c 
+
+```
+#include "get_next_line.h"
+#include <stdio.h>
+
+int	main(void)
+{
+	int		fd;
+	char	*line;
+	int		n;
+
+	fd = open("test_1.txt", O_RDONLY);
+	if (fd < 0)
+		return (1);
+	n = 1;
+	while ((line = get_next_line(fd)) != NULL)
+	{
+		printf("Line %d: %s", n++, line);
+		free(line);
+	}
+	close(fd);
+	return (0);
+}
+```
 
 ### Test file 1 (`test_1.txt`)
 
